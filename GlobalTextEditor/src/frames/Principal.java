@@ -23,24 +23,20 @@ import javax.swing.KeyStroke;
 
 public class Principal {
 
-	private JFrame janela;
+	private JFrame window;
 
-	private JTextArea areaTexto;
+	private JTextArea textArea;
 
-	private File arquivoEscolhido;
+	private File chosenFIle;
 
+	private String textFile = "";
 
-	private String textoArquivo = "";
-
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					Principal window = new Principal();
-					window.janela.setVisible(true);
+					window.window.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -48,18 +44,15 @@ public class Principal {
 		});
 	}
 
-	/**
-	 * Create the application.
-	 */
 	public Principal() {
 		initialize();
 	}
 
-	private boolean salvaTextoNoArquivo(File arquivo, String texto) {
-		if (arquivo != null) {
+	private boolean saveTextOnFile(File file, String text) {
+		if (file != null) {
 			try {
-				FileWriter gravador = new FileWriter(arquivo, false);
-				gravador.write(texto);
+				FileWriter gravador = new FileWriter(file, false);
+				gravador.write(text);
 				gravador.close();
 				return true;
 			} catch (Exception e) {
@@ -69,118 +62,111 @@ public class Principal {
 		return false;
 	}
 
-	public String pegaTextoArquivo(File arquivo) {
-		if (arquivo != null && arquivo.exists()) {
+	public String takeTextonFile(File file) {
+		if (file != null && file.exists()) {
 			try {
-				FileReader leitorArquivo = new FileReader(arquivo);
-				BufferedReader leitorBuferizado = new BufferedReader(leitorArquivo);
-				String textoArquivo = "";
-				String linhaArquivo = null;
-				while ((linhaArquivo = leitorBuferizado.readLine()) != null) {
-					textoArquivo += linhaArquivo + "\n";
+				FileReader fileReader = new FileReader(file);
+				BufferedReader bufferReader = new BufferedReader(fileReader);
+				String textFile = "";
+				String fileLine = null;
+				while ((fileLine = bufferReader.readLine()) != null) {
+					textFile += fileLine + "\n";
 				}
-				leitorBuferizado.close();
-				return textoArquivo;
+				bufferReader.close();
+				return textFile;
 			} catch (Exception e) {
-				System.out.println("Arquivo nao pode ser lido!");
+				System.out.println("The File cannot be read !");
 				e.printStackTrace();
 			}
 		}
 		return "";
 	}
 
-	public void abrirArquivo() {
-		JFileChooser janelaArquivos = new JFileChooser();
-		if (janelaArquivos.showOpenDialog(janela) == JFileChooser.APPROVE_OPTION) {
-			arquivoEscolhido = janelaArquivos.getSelectedFile();
-			textoArquivo = pegaTextoArquivo(arquivoEscolhido);
-			areaTexto.setText(textoArquivo);
-			String nomeArquivo = arquivoEscolhido.getName();
-			janela.setTitle("Editor - " + nomeArquivo);
-			areaTexto.setCaretPosition(0);
+	public void openFile() {
+		JFileChooser fileWindows = new JFileChooser();
+		if (fileWindows.showOpenDialog(window) == JFileChooser.APPROVE_OPTION) {
+			chosenFIle = fileWindows.getSelectedFile();
+			textFile = takeTextonFile(chosenFIle);
+			textArea.setText(textFile);
+			String fileName = chosenFIle.getName();
+			window.setTitle("Text Editor - " + fileName);
+			textArea.setCaretPosition(0);
 		}
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
 	private void initialize() {
-		janela = new JFrame();
-		janela.setTitle("Editor");
-		janela.setBounds(100, 100, 450, 300);
-		janela.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		janela.getContentPane().setLayout(new MigLayout("", "[grow]", "[grow]"));
+		window = new JFrame();
+		window.setTitle("Text");
+		window.setBounds(100, 100, 450, 300);
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.getContentPane().setLayout(new MigLayout("", "[grow]", "[grow]"));
 
-		JScrollPane areaRolagem = new JScrollPane();
-		janela.getContentPane().add(areaRolagem, "cell 0 0,grow");
+		JScrollPane scrollRoll = new JScrollPane();
+		window.getContentPane().add(scrollRoll, "cell 0 0,grow");
 
-		areaTexto = new JTextArea();
-		areaTexto.addKeyListener(new KeyAdapter() {
+		textArea = new JTextArea();
+		textArea.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				String textoAtualArquivo = areaTexto.getText();
-				/**
-				 * Se o texto original do arquivo foi alterado, coloca um
-				 * asterisco no final do título da janela.
-				 */
-				if (!textoAtualArquivo.equals(textoArquivo)) {
-					String titulo = janela.getTitle();
+				String fileActualtext = textArea.getText();
+
+				if (!fileActualtext.equals(textFile)) {
+					String text = window.getTitle();
+					text = text.replace(" * ", "");
+					text = text + " * ";
+					window.setTitle(text);
+				} else {
+					String titulo = window.getTitle();
 					titulo = titulo.replace(" * ", "");
-					titulo = titulo + " * ";
-					janela.setTitle(titulo);
-				} else { // Se o texto está igual ao do original, retira o
-							// asterisco
-					String titulo = janela.getTitle();
-					titulo = titulo.replace(" * ", "");
-					janela.setTitle(titulo);
+					window.setTitle(titulo);
 				}
 			}
 		});
-		areaRolagem.setViewportView(areaTexto);
+		scrollRoll.setViewportView(textArea);
 
-		JMenuBar barraMenus = new JMenuBar();
-		janela.setJMenuBar(barraMenus);
+		JMenuBar menuBar = new JMenuBar();
+		window.setJMenuBar(menuBar);
 
-		JMenu menuArquivo = new JMenu("Arquivo");
-		barraMenus.add(menuArquivo);
+		JMenu menuFile = new JMenu("File");
+		menuBar.add(menuFile);
 
-		JMenuItem opcaoAbrir = new JMenuItem("Abrir...");
-		opcaoAbrir.addActionListener(new ActionListener() {
+		JMenuItem openOption = new JMenuItem("Open...");
+		openOption.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				abrirArquivo();
+				openFile();
 			}
 		});
-		opcaoAbrir.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
-		menuArquivo.add(opcaoAbrir);
+		openOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
+		menuFile.add(openOption);
 
-		JMenuItem opcaoSalvar = new JMenuItem("Salvar");
-		opcaoSalvar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
-		opcaoSalvar.addActionListener(new ActionListener() {
+		JMenuItem saveOptiopns = new JMenuItem("Save");
+		saveOptiopns.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
+		saveOptiopns.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!salvaTextoNoArquivo(arquivoEscolhido, areaTexto.getText())) {
-					JOptionPane.showMessageDialog(janela,
-							"O arquivo '" + arquivoEscolhido.getName() + "' não pôde ser salvo.", "Erro",
+				if (!saveTextOnFile(chosenFIle, textArea.getText())) {
+					JOptionPane.showMessageDialog(window,
+							"The file chosen '" + chosenFIle.getName() + "' cannot be save .", "Error",
 							JOptionPane.ERROR_MESSAGE);
 				} else {
-					String titulo = janela.getTitle();
-					titulo = titulo.replace(" * ", "");
-					janela.setTitle(titulo);
+					String title = window.getTitle();
+					title = title.replace(" * ", "");
+					window.setTitle(title);
 				}
 			}
 		});
-		menuArquivo.add(opcaoSalvar);
+		menuFile.add(saveOptiopns);
 
-		JMenuItem mntmFechar = new JMenuItem("Fechar");
-		mntmFechar.addActionListener(new ActionListener() {
+		JMenuItem mntmClose = new JMenuItem("Close");
+		mntmClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				janela.setVisible(false);
-				janela.dispose();
-				System.exit(0); // Mata o processo
+				window.setVisible(false);
+				window.dispose();
+				System.exit(0);
 			}
 		});
-		mntmFechar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.ALT_MASK));
-		menuArquivo.add(mntmFechar);
+		mntmClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.ALT_MASK));
+		menuFile.add(mntmClose);
 	}
 
 }
