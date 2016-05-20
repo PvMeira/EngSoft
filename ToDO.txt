@@ -1,0 +1,7 @@
++ Desenvolver uma visao tecnica
+
++ Identificar requisitos
+	
++ Detalhar cenario de caso de uso
+
++ Requisitos de sistema
