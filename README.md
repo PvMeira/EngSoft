@@ -1,3 +1,6 @@
 # EngSoft
 
-projeto das aulas Eng
+Project Engenharia de Software 
+
+A text editor based on notepad and sublimeText  
+-----------------------InProgress-----------------------
