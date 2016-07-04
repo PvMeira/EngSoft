@@ -1,6 +1,7 @@
 # EngSoft
 
-Project Engenharia de Software 
+#Projeto para a cadeira de  Engenharia de Software II
 
-A text editor based on notepad and sublimeText  
------------------------InProgress-----------------------
+Um editor de Texto, estilo Sublime text e Note Pad 
+Usando Java com Swing
+
